@@ -7,7 +7,7 @@
         :key="index"
         :class="['message', msg.sender]"
       >
-        <strong>{{ msg.sender === 'user' ? 'Vous' : 'BookBot' }} :</strong>
+        <strong>{{ msg.sender === 'user' ? 'Vous' : 'BookBot' }} : </strong>
         <span v-html="formatText(msg.text)"></span>
       </div>
     </div>
