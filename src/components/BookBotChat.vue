@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, watch, nextTick, reactive } from "vue";
+import { defineComponent, ref, onMounted, nextTick, reactive } from "vue";
 
 export default defineComponent({
   name: "BookBotChat",
@@ -33,6 +33,13 @@ export default defineComponent({
     const userInput = ref("");
     const messages = ref([]);
     const chatWindow = ref(null);
+    
+    const welcomeMessage = `📚 Bienvenue dans le Chatbot de suggestions de livres !
+Tu peux me poser toutes sortes de questions :
+- Je veux un livre sur les dragons et la guerre
+- Un roman qui se passe à Paris noté au-dessus de 4
+- Peux-tu me donner le résumé du livre After ?
+- Je cherche un polar publié après 2015`;
 
     async function sendMessage() {
       const text = userInput.value.trim();
@@ -101,6 +108,11 @@ export default defineComponent({
     }
 
 
+    onMounted(() => {
+      const botMessage = reactive({ sender: "bot", text: "" });
+      messages.value.push(botMessage);
+      typeEffect(botMessage, welcomeMessage);
+    });
 
 
     return {
