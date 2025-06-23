@@ -82,14 +82,24 @@ export default defineComponent({
     });
 
     function formatText(text) {
-    return text
-        // Remplace les doubles (ou plus) espaces par espace insécable + espace normal (pour garder le style sans casser le texte)
-        .replace(/  +/g, (match) => {
-        return '&nbsp;'.repeat(match.length - 1) + ' ';
-        })
-        // Remplace les retours à la ligne par <br>
-        .replace(/\n/g, '<br>');
+    const escaped = text
+        .replace(/&/g, "&amp;")  // protéger les caractères HTML
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+    const withLineBreaks = escaped.replace(/\n/g, "<br>");
+
+    const withLinks = withLineBreaks.replace(
+        /((https?:\/\/|www\.)[^\s<]+)/g,
+        (url) => {
+        const href = url.startsWith("http") ? url : `http://${url}`;
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        }
+    );
+
+    return withLinks;
     }
+
 
 
 
@@ -185,4 +195,11 @@ export default defineComponent({
 .send-btn:hover {
   background-color: #004999;
 }
+
+.message a {
+  color: #0057aa;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
 </style>
