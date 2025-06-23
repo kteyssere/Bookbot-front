@@ -1,60 +1,107 @@
 <template>
   <div class="chat-container">
     <h1 class="title">📚 BookBot</h1>
-    <div class="chat-window">
+    <div class="chat-window" ref="chatWindow">
       <div
         v-for="(msg, index) in messages"
         :key="index"
         :class="['message', msg.sender]"
       >
         <strong>{{ msg.sender === 'user' ? 'Vous' : 'BookBot' }} :</strong>
-        <span>{{ msg.text }}</span>
+        <span v-html="formatText(msg.text)"></span>
       </div>
     </div>
 
     <form @submit.prevent="sendMessage" class="input-form">
-    <input
+      <input
         v-model="userInput"
         type="text"
         placeholder="Posez une question sur un livre..."
         class="input"
-    />
-    <button class="send-btn">Envoyer</button>
+      />
+      <button class="send-btn">Envoyer</button>
     </form>
-
   </div>
 </template>
 
 <script>
-export default {
+import { defineComponent, ref, watch, nextTick, reactive } from "vue";
+
+export default defineComponent({
   name: "BookBotChat",
-  data() {
-    return {
-      userInput: "",
-      messages: []
-    };
-  },
-  methods: {
-    async sendMessage() {
-      const text = this.userInput.trim();
+  setup() {
+    const userInput = ref("");
+    const messages = ref([]);
+    const chatWindow = ref(null);
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
       if (!text) return;
-      this.messages.push({ sender: "user", text });
-      this.userInput = "";
+
+      messages.value.push({ sender: "user", text });
+      userInput.value = "";
 
       try {
         const response = await fetch("http://localhost:5000/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text })
+          body: JSON.stringify({ message: text }),
         });
+
         const data = await response.json();
-        this.messages.push({ sender: "bot", text: data.reply });
+
+        const botMessage = reactive({ sender: "bot", text: "" });
+        messages.value.push(botMessage);
+        typeEffect(botMessage, data.response);
       } catch (err) {
-        this.messages.push({ sender: "bot", text: "Erreur : impossible de contacter BookBot." });
+        messages.value.push({
+          sender: "bot",
+          text: "❌ Erreur : impossible de contacter BookBot.",
+        });
       }
     }
-  }
-};
+
+    function typeEffect(messageObj, fullText, speed = 20) {
+    let i = 0;
+    const interval = setInterval(() => {
+        messageObj.text += fullText.charAt(i);
+        i++;
+        if (i >= fullText.length) {
+        clearInterval(interval);
+        }
+    }, speed);
+    }
+
+
+
+    watch(messages, async () => {
+      await nextTick();
+      if (chatWindow.value) {
+        chatWindow.value.scrollTop = chatWindow.value.scrollHeight;
+      }
+    });
+
+    function formatText(text) {
+    return text
+        // Remplace les doubles (ou plus) espaces par espace insécable + espace normal (pour garder le style sans casser le texte)
+        .replace(/  +/g, (match) => {
+        return '&nbsp;'.repeat(match.length - 1) + ' ';
+        })
+        // Remplace les retours à la ligne par <br>
+        .replace(/\n/g, '<br>');
+    }
+
+
+
+    return {
+      userInput,
+      messages,
+      chatWindow,
+      sendMessage,
+      formatText
+    };
+  },
+});
 </script>
 
 <style scoped>
@@ -104,7 +151,7 @@ export default {
   font-weight: 600;
 }
 
-form {
+.input-form {
   display: flex;
   gap: 0.5rem;
 }
@@ -117,11 +164,6 @@ form {
   font-size: 1rem;
   outline: none;
   box-sizing: border-box;
-}
-
-.input-form {
-  display: flex;
-  gap: 0.5rem;
 }
 
 .input:focus {
@@ -143,5 +185,4 @@ form {
 .send-btn:hover {
   background-color: #004999;
 }
-
 </style>
