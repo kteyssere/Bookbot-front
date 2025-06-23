@@ -66,20 +66,20 @@ export default defineComponent({
     const interval = setInterval(() => {
         messageObj.text += fullText.charAt(i);
         i++;
+        scrollToBottom(); 
         if (i >= fullText.length) {
         clearInterval(interval);
         }
     }, speed);
     }
 
-
-
-    watch(messages, async () => {
-      await nextTick();
-      if (chatWindow.value) {
+    function scrollToBottom() {
+    nextTick(() => {
+        if (chatWindow.value) {
         chatWindow.value.scrollTop = chatWindow.value.scrollHeight;
-      }
+        }
     });
+    }
 
     function formatText(text) {
     const escaped = text
