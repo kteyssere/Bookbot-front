@@ -12,15 +12,16 @@
       </div>
     </div>
 
-    <form @submit.prevent="sendMessage">
-      <input
+    <form @submit.prevent="sendMessage" class="input-form">
+    <input
         v-model="userInput"
         type="text"
         placeholder="Posez une question sur un livre..."
         class="input"
-      />
-      <button class="send-btn">Envoyer</button>
+    />
+    <button class="send-btn">Envoyer</button>
     </form>
+
   </div>
 </template>
 
@@ -116,6 +117,11 @@ form {
   font-size: 1rem;
   outline: none;
   box-sizing: border-box;
+}
+
+.input-form {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .input:focus {
