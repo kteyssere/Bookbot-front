@@ -26,9 +26,11 @@
 
 <script>
 import { defineComponent, ref, onMounted, nextTick, reactive } from "vue";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default defineComponent({
   name: "BookBotChat",
+
   setup() {
     const userInput = ref("");
     const messages = ref([]);
@@ -53,7 +55,7 @@ Tu peux me poser toutes sortes de questions :
       userInput.value = "";
 
       try {
-        const response = await fetch("http://localhost:5000/chat", {
+        const response = await fetch(`${API_URL}/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: text }),
