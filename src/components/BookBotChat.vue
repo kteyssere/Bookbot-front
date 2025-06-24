@@ -37,9 +37,13 @@ export default defineComponent({
     const welcomeMessage = `📚 Bienvenue dans le Chatbot de suggestions de livres !
 Tu peux me poser toutes sortes de questions :
 - Je veux un livre sur les dragons et la guerre
-- Un roman qui se passe à Paris noté au-dessus de 4
-- Peux-tu me donner le résumé du livre After ?
-- Je cherche un polar publié après 2015`;
+- Je cherche un roman d'amour noté 4 étoiles
+- Quel est les meilleurs livres de science-fiction ?
+- Je veux un livre de fantasy avec des dragons
+- Je veux des livres de *Sarah Rivens*
+- Un roman qui se passe à Paris
+- Donne-moi le résumé de *After*
+- Je cherche un roman policier après 1960`;
 
     async function sendMessage() {
       const text = userInput.value.trim();
